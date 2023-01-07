@@ -1,0 +1,50 @@
+A51 MACRO ASSEMBLER  STARTUP                                                              01/07/2023 23:54:36 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\STARTUP.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE STARTUP.A51 SET(SMALL) DEBUG PRINT(.\Listings\STARTUP.lst) OBJECT(.\Obj
+                      ects\STARTUP.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+----                   1                     CSEG AT 0x0000  
+                       2                             
+0000 90000D            3     START:  MOV DPTR,#TABLE
+0003 759001            4                     MOV P1,#0x1 ; which led will be light
+0006 7404              5                     MOV A, #0x4
+0008 93                6                     MOVC A,@A+DPTR
+                       7                     
+0009 F5A0              8     L2:             MOV P2,A
+000B 0109              9                     AJMP L2
+                      10                     
+000D 3F               11     TABLE:  DB 3fh ;0
+000E 06               12                 DB 06h ;1
+000F 5B               13                 DB 5bh ;2
+0010 4F               14                 DB 4fh ;3
+0011 66               15                 DB 66h ;4
+0012 6D               16                 DB 6dh ;5
+0013 7D               17             DB 7dh ;6
+0014 07               18                 DB 07h ;7
+0015 7F               19                     DB 7fh ;8
+0016 6F               20                     DB 6fh ;9
+                      21                     END             
+A51 MACRO ASSEMBLER  STARTUP                                                              01/07/2023 23:54:36 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+L2 . . . . . . . .  C ADDR   0009H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+START. . . . . . .  C ADDR   0000H   A   
+TABLE. . . . . . .  C ADDR   000DH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
