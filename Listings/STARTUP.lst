@@ -1,4 +1,4 @@
-A51 MACRO ASSEMBLER  STARTUP                                                              01/07/2023 23:54:36 PAGE     1
+A51 MACRO ASSEMBLER  STARTUP                                                              01/08/2023 04:47:20 PAGE     1
 
 
 MACRO ASSEMBLER A51 V8.2.7.0
@@ -9,27 +9,97 @@ ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE STARTUP.A51 SET(SMALL) DEBUG PR
 LOC  OBJ            LINE     SOURCE
 
 ----                   1                     CSEG AT 0x0000  
-                       2                             
-0000 90000D            3     START:  MOV DPTR,#TABLE
-0003 759001            4                     MOV P1,#0x1 ; which led will be light
-0006 7404              5                     MOV A, #0x4
-0008 93                6                     MOVC A,@A+DPTR
+                       2             
+0000                   3     BEGIN:  
+0000 7400              4                     MOV A, #0 ;row
+0002 7B00              5                     MOV R3, #0 ; i
+0004 7A00              6                     MOV R2, #0
                        7                     
-0009 F5A0              8     L2:             MOV P2,A
-000B 0109              9                     AJMP L2
-                      10                     
-000D 3F               11     TABLE:  DB 3fh ;0
-000E 06               12                 DB 06h ;1
-000F 5B               13                 DB 5bh ;2
-0010 4F               14                 DB 4fh ;3
-0011 66               15                 DB 66h ;4
-0012 6D               16                 DB 6dh ;5
-0013 7D               17             DB 7dh ;6
-0014 07               18                 DB 07h ;7
-0015 7F               19                     DB 7fh ;8
-0016 6F               20                     DB 6fh ;9
-                      21                     END             
-A51 MACRO ASSEMBLER  STARTUP                                                              01/07/2023 23:54:36 PAGE     2
+0006                   8     SCAN:   
+0006 90005C            9                     MOV DPTR, #ScanCode
+0009 EB               10                     MOV A, R3
+000A 93               11                     MOVC A, @A+DPTR
+000B F580             12                     MOV P0, A
+000D E580             13                     MOV A,P0 ;when press A has a different resalt
+000F 54F0             14                     ANL A,#0xf0
+                      15                     
+0011 B4E004           16                     CJNE A, #0xe0, T
+0014 7800             17                     MOV R0, #0
+0016 8015             18                     SJMP COUNT
+                      19                     
+0018 B4D004           20     T:      CJNE A, #0xd0, T2
+001B 7801             21                     MOV R0, #1
+001D 800E             22                     SJMP COUNT
+                      23                     
+001F B4B004           24     T2:     CJNE A, #0xb0, T3
+0022 7802             25                     MOV R0, #2
+0024 8007             26                     SJMP COUNT
+                      27                     
+0026 B4700A           28     T3:     CJNE A, #0x70, Default
+0029 7803             29                     MOV R0, #3
+002B 8000             30                     SJMP COUNT
+                      31     
+                      32     
+002D                  33     COUNT:          
+002D E8               34                     MOV A, R0 ; put key=1,2,3,4 to A
+002E 23               35                     RL A      ; key*2
+002F 23               36                     RL A      ; key*4
+0030 2B               37                     ADD A, R3 ; key*4 + i ;A can select which number 
+                      38                     ;MOV R2, A ; R2 = A     
+0031 1139             39                     ACALL ShowNum
+                      40                     
+0033                  41     Default: 
+0033 0B               42                     INC R3
+0034 BB04CF           43                     CJNE R3,#4,SCAN
+0037 80C7             44                     SJMP BEGIN
+                      45                     
+                      46     
+                      47     
+                      48     
+0039                  49     ShowNum:
+0039 900052           50             MOV DPTR,#TABLE
+003C 759000           51                     MOV P1,#0 ; which led will be light
+                      52                     ;MOV A, R2 ; select number 
+003F 93               53                     MOVC A,@A+DPTR
+                      54                     
+0040                  55     L0:             
+0040 F5A0             56                     MOV P2,A
+0042 1145             57                     ACALL DELAY
+A51 MACRO ASSEMBLER  STARTUP                                                              01/08/2023 04:47:20 PAGE     2
+
+0044 22               58                     RET
+                      59                     
+0045                  60     DELAY:
+0045 7D02             61                     MOV R5, #2
+0047                  62                     D2:
+0047 7E02             63                     MOV R6, #2
+0049                  64                     D1:
+0049 7C02             65                     MOV R4, #2
+004B DCFE             66                     DJNZ R4, $
+004D DEFA             67                     DJNZ R6, D1
+004F DDF6             68                     DJNZ R5, D2
+0051 22               69                     RET
+                      70                     
+0052                  71     TABLE:  
+0052 3F               72                     DB 3fh ;0
+0053 06               73                 DB 06h ;1
+0054 5B               74                 DB 5bh ;2
+0055 4F               75                 DB 4fh ;3
+0056 66               76                 DB 66h ;4
+0057 6D               77                 DB 6dh ;5
+0058 7D               78             DB 7dh ;6
+0059 07               79                 DB 07h ;7
+005A 7F               80                     DB 7fh ;8
+005B 6F               81                     DB 6fh ;9
+                      82                             
+005C                  83     ScanCode:
+005C FE               84                     DB 11111110B ;0xfe
+005D FD               85                     DB 11111101B ;0xfd
+005E FB               86                     DB 11111011B ;0xfb
+005F F7               87                     DB 11110111B ;0xf7
+                      88                     END             
+                                                     
+A51 MACRO ASSEMBLER  STARTUP                                                              01/08/2023 04:47:20 PAGE     3
 
 SYMBOL TABLE LISTING
 ------ ----- -------
@@ -37,11 +107,23 @@ SYMBOL TABLE LISTING
 
 N A M E             T Y P E  V A L U E   ATTRIBUTES
 
-L2 . . . . . . . .  C ADDR   0009H   A   
+BEGIN. . . . . . .  C ADDR   0000H   A   
+COUNT. . . . . . .  C ADDR   002DH   A   
+D1 . . . . . . . .  C ADDR   0049H   A   
+D2 . . . . . . . .  C ADDR   0047H   A   
+DEFAULT. . . . . .  C ADDR   0033H   A   
+DELAY. . . . . . .  C ADDR   0045H   A   
+L0 . . . . . . . .  C ADDR   0040H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
 P1 . . . . . . . .  D ADDR   0090H   A   
 P2 . . . . . . . .  D ADDR   00A0H   A   
-START. . . . . . .  C ADDR   0000H   A   
-TABLE. . . . . . .  C ADDR   000DH   A   
+SCAN . . . . . . .  C ADDR   0006H   A   
+SCANCODE . . . . .  C ADDR   005CH   A   
+SHOWNUM. . . . . .  C ADDR   0039H   A   
+T. . . . . . . . .  C ADDR   0018H   A   
+T2 . . . . . . . .  C ADDR   001FH   A   
+T3 . . . . . . . .  C ADDR   0026H   A   
+TABLE. . . . . . .  C ADDR   0052H   A   
 
 
 REGISTER BANK(S) USED: 0 

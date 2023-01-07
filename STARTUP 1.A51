@@ -1,72 +1,52 @@
 		CSEG AT 0x0000	
 	
 BEGIN:	
-		MOV A, #0 ;row
-		MOV R3, #0 ; i
-		MOV R2, #0
+		MOV DPTR, #ScanCode
+		MOV A, #0
 		
 SCAN:	
-		MOV DPTR, #ScanCode
-		MOV A, R3
 		MOVC A, @A+DPTR
 		MOV P0, A
-		MOV A,P0 ;when press A has a different resalt
+		MOV A, P0 ;when press A has a different resalt
 		ANL A,#0xf0
 		
-		CJNE A, #0xe0, T
+		CJNE A, #0xe0, T1
 		MOV R0, #0
-		SJMP COUNT
+		SJMP CONT
 		
-T:      CJNE A, #0xd0, T2
+T1:     CJNE A, #0xd0, T2
 		MOV R0, #1
-		SJMP COUNT
+		SJMP CONT
 		
 T2:     CJNE A, #0xb0, T3
 		MOV R0, #2
-		SJMP COUNT
+		SJMP CONT
 		
 T3:     CJNE A, #0x70, Default
 		MOV R0, #3
-		SJMP COUNT
+		SJMP CONT
 
+Default: R0, #-1
 
-COUNT:		
-		MOV A, R0 ; put key=1,2,3,4 to A
-		RL A      ; key*2
-		RL A      ; key*4
-		ADD A, R3 ; key*4 + i ;A can select which number 
-		;MOV R2, A ; R2 = A	
-		ACALL ShowNum
+CONT:
+		AJMP ShowNum
 		
-Default: 
-		INC R3
-		CJNE R3,#4,SCAN
-		SJMP BEGIN
-		
+		INC A
+		CJNE A,#4,SCAN
+		AJMP BEGIN
 
 /**************************************/
 
 ShowNum:
+		MOV DPTR,#0
         MOV DPTR,#TABLE
 		MOV P1,#0 ; which led will be light
-		;MOV A, R2 ; select number 
+		MOV A, #4 ; select number 
 		MOVC A,@A+DPTR
 		
 L0:		
 		MOV P2,A
-		ACALL DELAY
-		RET
-		
-DELAY:
-		MOV R5, #2
-		D2:
-		MOV R6, #2
-		D1:
-		MOV R4, #2
-		DJNZ R4, $
-		DJNZ R6, D1
-		DJNZ R5, D2
-		RET
+		AJMP L0
 		
 TABLE:  
 		DB 3fh ;0
@@ -86,4 +66,3 @@ ScanCode:
 		DB 11111011B ;0xfb
 		DB 11110111B ;0xf7
 		END		
-			
